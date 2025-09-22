@@ -134,7 +134,7 @@ class _HomeState extends State<Home> {
                               children: [
                                 SizedBox(height: 10.0),
                                 Text(
-                                  'Sanjana',
+                                  'Nishant',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     fontSize: 18.0,
@@ -181,4 +181,3 @@ class _HomeState extends State<Home> {
     );
   }
 }
-// id("com.google.gms.google-services") version "4.4.3" apply false

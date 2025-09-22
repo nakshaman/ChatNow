@@ -1,3 +1,4 @@
+import 'package:chats/services/auth.dart';
 import 'package:flutter/material.dart';
 
 class OnBoarding extends StatefulWidget {
@@ -42,39 +43,44 @@ class _OnBoardingState extends State<OnBoarding> {
               ),
             ),
             SizedBox(height: 80),
-            Container(
-              margin: EdgeInsets.only(left: 30, right: 30),
-              child: Material(
-                elevation: 3.0,
-                borderRadius: BorderRadius.circular(20),
-                child: Container(
-                  height: 70,
-                  padding: EdgeInsets.only(top: 8.0, left: 30.0, bottom: 8.0),
-                  // margin: EdgeInsets.only(left: 30, right: 30),
-                  width: MediaQuery.of(context).size.width,
-                  decoration: BoxDecoration(
-                    color: Color(0xff703eff),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: [
-                      Image.asset(
-                        "images/search.png",
-                        height: 50,
-                        width: 50,
-                        fit: BoxFit.cover,
-                      ),
-                      SizedBox(width: 30),
-                      Text(
-                        'Sign in with Google',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 22.0,
-                          fontWeight: FontWeight.bold,
+            GestureDetector(
+              onTap: () {
+                AuthMethods().signInWithGoogle(context);
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: 30, right: 30),
+                child: Material(
+                  elevation: 3.0,
+                  borderRadius: BorderRadius.circular(20),
+                  child: Container(
+                    height: 70,
+                    padding: EdgeInsets.only(top: 8.0, left: 30.0, bottom: 8.0),
+                    // margin: EdgeInsets.only(left: 30, right: 30),
+                    width: MediaQuery.of(context).size.width,
+                    decoration: BoxDecoration(
+                      color: Color(0xff703eff),
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    child: Row(
+                      children: [
+                        Image.asset(
+                          "images/search.png",
+                          height: 50,
+                          width: 50,
+                          fit: BoxFit.cover,
                         ),
-                      ),
-                    ],
+                        SizedBox(width: 30),
+                        Text(
+                          'Sign in with Google',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 22.0,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),

@@ -31,7 +31,7 @@ class _ChatPageState extends State<ChatPage> {
                   ),
                   SizedBox(width: MediaQuery.of(context).size.width / 3.5),
                   Text(
-                    'Sanjana',
+                    'Nishant',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
