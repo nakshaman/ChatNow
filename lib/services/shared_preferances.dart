@@ -31,4 +31,29 @@ class SharedPreferancesData {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     return prefs.setString(userUserNameKey, getUserUserName);
   }
+
+  Future<String?> getUserId() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(userIdKey);
+  }
+
+  Future<String?> getUserDisplayName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(userNameKey);
+  }
+
+  Future<String?> getUserName() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(userNameKey);
+  }
+
+  Future<String?> getUserEmail() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(userEmailKey);
+  }
+
+  Future<String?> getUserPicture() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString(userImageKey);
+  }
 }
