@@ -42,13 +42,13 @@ class _OnBoardingState extends State<OnBoarding> {
                 ),
               ),
             ),
-            SizedBox(height: 80),
+            SizedBox(height: 70),
             GestureDetector(
               onTap: () {
                 AuthMethods().signInWithGoogle(context);
               },
               child: Container(
-                margin: EdgeInsets.only(left: 30, right: 30),
+                margin: EdgeInsets.only(left: 30, right: 30,bottom: 20),
                 child: Material(
                   elevation: 3.0,
                   borderRadius: BorderRadius.circular(20),

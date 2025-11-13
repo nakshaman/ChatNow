@@ -26,12 +26,12 @@ class DatabaseMethods {
     Map<String, dynamic> lastMessageInfoMap,
   ) async {
     return FirebaseFirestore.instance
-        .collection("chatrooms")
+        .collection("Chatrooms")
         .doc(chatRoomId)
         .update(lastMessageInfoMap);
   }
 
-  Future<QuerySnapshot> Search(String username) async {
+  Future<QuerySnapshot> search(String username) async {
     return await FirebaseFirestore.instance
         .collection("users")
         .where("SearchKey", isEqualTo: username.substring(0, 1).toUpperCase())

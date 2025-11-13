@@ -39,7 +39,7 @@ class SharedPreferancesData {
 
   Future<String?> getUserDisplayName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(userNameKey);
+    return prefs.getString(userUserNameKey);
   }
 
   Future<String?> getUserName() async {

@@ -58,21 +58,28 @@ class AuthMethods {
           // ignore: use_build_context_synchronously
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              backgroundColor: Colors.green,
+              duration: Duration(seconds: 5),
               content: Center(
                 child: Text(
-                  "User Registered",
+                  "Welcome ${userDetails.displayName}",
                   style: TextStyle(
                     fontSize: 20,
-                    color: Colors.black87,
+                    fontStyle: FontStyle.italic,
+                    color: Colors.white,
                     fontWeight: FontWeight.w500,
                   ),
                 ),
               ),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              elevation: 10.0,
+              margin: EdgeInsets.all(12),
+              backgroundColor: Colors.green,
             ),
           );
           Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
             context,
             MaterialPageRoute(builder: (context) => Home()),
           );

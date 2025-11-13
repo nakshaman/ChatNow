@@ -102,9 +102,9 @@ class _ChatPageState extends State<ChatPage> {
                       color: Colors.white,
                     ),
                   ),
-                  SizedBox(width: MediaQuery.of(context).size.width / 3.5),
+                  SizedBox(width: MediaQuery.of(context).size.width / 4.5),
                   Text(
-                    'Nishant',
+                    myUserName!,
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       color: Colors.white,
@@ -181,7 +181,7 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                       ],
                     ),
-                    SizedBox(height: MediaQuery.of(context).size.height / 1.65),
+                    SizedBox(height: MediaQuery.of(context).size.height / 1.70),
                     SizedBox(
                       child: Row(
                         children: [
