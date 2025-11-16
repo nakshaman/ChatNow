@@ -1,6 +1,7 @@
+import 'package:chats/pages/chat_page.dart';
 import 'package:chats/services/database.dart';
+import 'package:chats/services/shared_preferances.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -11,45 +12,144 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  String? myUserName, myName, myEmail, myPicture;
+  getSharedPrefData() async {
+    myUserName = await SharedPreferancesData().getUserName();
+    myName = await SharedPreferancesData().getUserDisplayName();
+    myEmail = await SharedPreferancesData().getUserEmail();
+    myPicture = await SharedPreferancesData().getUserPicture();
+    setState(() {});
+  }
+
   TextEditingController searchController = TextEditingController();
   bool search = false;
   var queryResultSet = [];
   var tempSearchStore = [];
-  getChatRoomIdByUsername(String a, String b) {
-    if (a.substring(0, 1).codeUnitAt(0) > b.substring(0, 1).codeUnitAt(0)) {
-      return "$b\_$a";
+  String getChatRoomIdByUsername(String a, String b) {
+    a = a.toLowerCase().trim();
+    b = b.toLowerCase().trim();
+
+    if (a.compareTo(b) < 0) {
+      return "${a}_$b";
     } else {
-      return "$a\_$b";
+      return "${b}_$a";
     }
+  }
+
+  void initState() {
+    getSharedPrefData();
+    super.initState();
   }
 
   intiateSearch(String value) {
     if (value.isEmpty) {
       setState(() {
+        search = false;
         queryResultSet = [];
         tempSearchStore = [];
       });
+      return;
     }
+
     setState(() {
       search = true;
     });
-    var capitalizedValue =
-        value.substring(0, 1).toUpperCase() + value.substring(1);
+
+    // SAFE CAPITALIZATION
+    String capitalizedValue = value.length == 1
+        ? value.toUpperCase()
+        : value.substring(0, 1).toUpperCase() + value.substring(1);
+
     if (queryResultSet.isEmpty && value.length == 1) {
-      DatabaseMethods().search(value).then((QuerySnapshot snapshot) {
+      DatabaseMethods().search(capitalizedValue).then((QuerySnapshot snapshot) {
         for (int i = 0; i < snapshot.docs.length; i++) {
           queryResultSet.add(snapshot.docs[i].data());
         }
+        setState(() {});
       });
     }
+
     tempSearchStore = [];
-    queryResultSet.forEach((element) {
+    for (var element in queryResultSet) {
       if (element['username'].startsWith(capitalizedValue)) {
-        setState(() {
-          tempSearchStore.add(element);
-        });
+        tempSearchStore.add(element);
       }
-    });
+    }
+
+    setState(() {});
+  }
+
+  Widget buildResultCard(data) {
+    return GestureDetector(
+      onTap: () async {
+        search = false;
+        var chatRoomId = getChatRoomIdByUsername(myUserName!, data['username']);
+        Map<String, dynamic> chatInfoMap = {
+          "users": [myUserName, data["username"]],
+        };
+        await DatabaseMethods().createChatRoom(chatRoomId, chatInfoMap);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatPage(
+              name: data["Name"],
+              profileUrl: data["Image"],
+              username: data["username"],
+            ),
+          ),
+        );
+      },
+      child: Container(
+        margin: EdgeInsets.symmetric(vertical: 8.0),
+        child: Material(
+          elevation: 5.0,
+          borderRadius: BorderRadius.circular(10.0),
+          child: Container(
+            padding: EdgeInsets.all(18.0),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Row(
+              children: [
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(60.0),
+                  child: Image.network(
+                    data['Image'],
+                    height: 50,
+                    width: 50,
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                SizedBox(width: 12.0),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      data['Name'],
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 6.0),
+                    Text(
+                      data['Email'],
+                      style: TextStyle(
+                        color: Colors.grey,
+                        fontSize: 14,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 
   @override
@@ -81,7 +181,7 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Text(
-                    'Nakshaman',
+                    ' $myName',
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: 24,
@@ -89,45 +189,50 @@ class _HomeState extends State<Home> {
                     ),
                   ),
                   Spacer(),
-                  Container(
-                    padding: EdgeInsets.all(5.0),
-                    margin: EdgeInsets.only(right: 20.0),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10.0),
-                    ),
-                    child: Icon(
-                      Icons.person,
-                      color: Color(0xff703eff),
-                      size: 30,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 10.0),
+                    child: GestureDetector(
+                      onTap: () {},
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(30.0),
+                        child: Image.network(
+                          myPicture!,
+                          height: 50,
+                          width: 50,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                     ),
                   ),
                 ],
               ),
             ),
             SizedBox(height: 10),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(
-                'Welcome to',
-                style: TextStyle(
-                  color: Color.fromARGB(197, 255, 255, 255),
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(left: 20.0, top: 15.0),
+                  child: Text(
+                    'Welcome to',
+                    style: TextStyle(
+                      color: Color.fromARGB(197, 255, 255, 255),
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 20.0),
-              child: Text(
-                'Hive Chat',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 40,
-                  fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.only(left: 10.0),
+                  child: Text(
+                    'Hive Chat',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 40,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
-              ),
+              ],
             ),
             SizedBox(height: 30.0),
             Expanded(
@@ -241,62 +346,4 @@ class _HomeState extends State<Home> {
       ),
     );
   }
-}
-
-Widget buildResultCard(data) {
-  return GestureDetector(
-    onTap: () async {
-      debugPrint("Tapped on ${data['Name']}");
-    },
-    child: Container(
-      margin: EdgeInsets.symmetric(vertical: 8.0),
-      child: Material(
-        elevation: 5.0,
-        borderRadius: BorderRadius.circular(10.0),
-        child: Container(
-          padding: EdgeInsets.all(18.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(10.0),
-          ),
-          child: Row(
-            children: [
-              ClipRRect(
-                borderRadius: BorderRadius.circular(60.0),
-                child: Image.network(
-                  data['Image'],
-                  height: 50,
-                  width: 50,
-                  fit: BoxFit.cover,
-                ),
-              ),
-              SizedBox(width: 12.0),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    data['Name'],
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 6.0),
-                  Text(
-                    data['Email'],
-                    style: TextStyle(
-                      color: Colors.grey,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
-    ),
-  );
 }

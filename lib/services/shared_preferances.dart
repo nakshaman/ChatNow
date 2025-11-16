@@ -39,12 +39,12 @@ class SharedPreferancesData {
 
   Future<String?> getUserDisplayName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(userUserNameKey);
+    return prefs.getString(userNameKey);
   }
 
   Future<String?> getUserName() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString(userNameKey);
+    return prefs.getString(userUserNameKey);
   }
 
   Future<String?> getUserEmail() async {

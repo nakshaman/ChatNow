@@ -26,7 +26,7 @@ class DatabaseMethods {
     Map<String, dynamic> lastMessageInfoMap,
   ) async {
     return FirebaseFirestore.instance
-        .collection("Chatrooms")
+        .collection("chatrooms")
         .doc(chatRoomId)
         .update(lastMessageInfoMap);
   }
@@ -36,5 +36,33 @@ class DatabaseMethods {
         .collection("users")
         .where("SearchKey", isEqualTo: username.substring(0, 1).toUpperCase())
         .get();
+  }
+
+  Future createChatRoom(
+    String chatRoomId,
+    Map<String, dynamic> chatRoomInfoMap,
+  ) async {
+    final docRef = FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId);
+
+    final snapshot = await docRef.get();
+
+    if (snapshot.exists) {
+      // Already exists -> do NOT create new one
+      return true;
+    } else {
+      // Create new chatroom
+      return await docRef.set(chatRoomInfoMap);
+    }
+  }
+
+  Stream<QuerySnapshot> getChatRoomMessages(String chatRoomId) {
+    return FirebaseFirestore.instance
+        .collection("chatrooms")
+        .doc(chatRoomId)
+        .collection("chats")
+        .orderBy("time", descending: true)
+        .snapshots();
   }
 }
